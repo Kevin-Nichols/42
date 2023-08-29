@@ -15,7 +15,7 @@ describe("sqlForPartialUpdate", function() {
     expect(res).toEqual(
       {
         setCols: "\"field1\"=$1, \"field2\"=$2", 
-        Values: ["value1", "value2"]
+        values: ["value1", "value2"]
       });
   });
 });
