@@ -61,15 +61,16 @@ class Company {
     let queryData = [];
     let queryExpressions = [];
 
-    if(minEmployees > maxEmployees) {
-      throw new BadRequestError("Min employees cannot be greater than max employees.");
-    }
-
     /**
      * For every search filter, we push to queryData and queryExpressions.
      * 
      * This way the correct SQL can be passed in.
      */
+
+    if(minEmployees > maxEmployees) {
+      throw new BadRequestError("Min employees cannot be greater than max employees.");
+    }
+    
     if(name) {
       queryData.push(`%${name}%`);
       queryExpressions.push(`name ILIKE $${queryData.length}`);
@@ -118,6 +119,16 @@ class Company {
     const company = companyRes.rows[0];
 
     if (!company) throw new NotFoundError(`No company: ${handle}`);
+
+    const jobsRes = await db.query(
+      `SELECT id, title, salary, equity
+       FROM jobs
+       WHERE company_handle = $1
+       ORDER BY id`,
+    [handle],
+    );
+
+    company.jobs = jobsRes.rows;
 
     return company;
   }
